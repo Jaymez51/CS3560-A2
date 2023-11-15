@@ -4,6 +4,6 @@ Simulates a miniature version of twitter
 
 ## Instructions
 
-Run Driver
+-Run Driver
 
-Select group node to add user or group
+-Select group node to add user or group
