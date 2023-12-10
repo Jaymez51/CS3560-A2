@@ -87,6 +87,10 @@ public class UserView implements ActionListener{
         userFrame.pack();
         userFrame.setSize(300, 600);
         userFrame.setVisible(true);
+
+        // Print creation time in the console
+        System.out.println("Creation Time: " + user.GetCreationTime());
+        System.out.println("Last Update Time: " + user.GetLastUpdateTime());
     }
     
     // action path for buttons

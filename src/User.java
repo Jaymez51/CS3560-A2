@@ -7,8 +7,9 @@ public class User extends Composite{
     private ArrayList<Visitable> followers;
     private ArrayList<String> tweets;
     private DefaultListModel<String> feed;
+    private long lastUpdateTime;
 
-    public User( String id ){
+    public User(String id){
         super( id );
         following = new DefaultListModel<User>();
         followers = new ArrayList<Visitable>();
@@ -16,39 +17,44 @@ public class User extends Composite{
         tweets = new ArrayList<String>();
         feed = new DefaultListModel<String>();
        
-        followers.add( this );
+        followers.add(this);
+        this.lastUpdateTime = System.currentTimeMillis();  // Set last update time
     }
-    public void AddFollowing( User user ){
-        following.addElement( user );
+    public void AddFollowing(User user){
+        following.addElement(user);
     }
     public DefaultListModel<User> GetFollowing(){
         return following;
     }
-    public void AddFollowers( Visitable obs ){
-        followers.add( obs );
+    public void AddFollowers(Visitable obs){
+        followers.add(obs);
     }
-    public void Tweet( String tweet ){
-        tweets.add( tweet );
-        NotifyFollowers( tweet );
+    public void Tweet(String tweet){
+        tweets.add(tweet);
+        NotifyFollowers(tweet);
+        lastUpdateTime = System.currentTimeMillis();  // Update last update time
+    }
+    public long GetLastUpdateTime() {
+        return lastUpdateTime;
     }
     public ArrayList<String> GetMyTweets(){
         return tweets;
     }
-    public void UpdateTweets( String tweet ){
-        feed.addElement( tweet );
+    public void UpdateTweets(String tweet){
+        feed.addElement(tweet);
     }
-    public void NotifyFollowers( String tweet ){
-        for( Visitable user: followers ){
-            user.UpdateTweets( tweet );
+    public void NotifyFollowers(String tweet){
+        for(Visitable user: followers){
+            user.UpdateTweets(tweet);
         }
     }
-    public void AcceptMessages( Visitor visitor ){
-        visitor.VisitMessages( this );
+    public void AcceptMessages(Visitor visitor){
+        visitor.VisitMessages(this);
     }
     public DefaultListModel<String> GetTweets(){
         return feed;
     }
-    public void AcceptPositiveMessages( Visitor visitor ){
-        visitor.VisitPositiveMessages( this );
+    public void AcceptPositiveMessages(Visitor visitor){
+        visitor.VisitPositiveMessages(this);
     }
 }

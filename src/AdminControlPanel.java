@@ -20,7 +20,7 @@ public class AdminControlPanel implements ActionListener, Visitor{
     private static AdminControlPanel adminManager;
     private int messageTotal, userTotal, groupTotal, positivePercentage;
     private JPanel adminPanel, centerPanel, upperPanel, middleColumn, lowerPanel, topPanel;
-    private JButton b1, b2, b3, b4, b6, b5, b7;
+    private JButton b1, b2, b3, b4, b6, b5, b7, b8, b9;
     private JTextField t1, t2;
     private DefaultTreeModel userListModel;
     // set positive words for percentage check
@@ -72,6 +72,10 @@ public class AdminControlPanel implements ActionListener, Visitor{
         middleColumn.add(Box.createVerticalStrut(2)); // spacer for gap
         b3 = new JButton("Open User View");
         middleColumn.add(b3);
+        b8 = new JButton("User/Group ID verification");
+        middleColumn.add(b8);
+        b9 = new JButton("Show Last Updated User");
+        middleColumn.add(b9);
 
         // Add topPanel to upperPanel
         upperPanel.add(topPanel);
@@ -88,6 +92,8 @@ public class AdminControlPanel implements ActionListener, Visitor{
         b1.setMaximumSize(new Dimension(Integer.MAX_VALUE, b2.getPreferredSize().height));
         b2.setMaximumSize(new Dimension(Integer.MAX_VALUE, b2.getPreferredSize().height));
         b3.setMaximumSize(new Dimension(Integer.MAX_VALUE, b2.getPreferredSize().height));
+        b8.setMaximumSize(new Dimension(Integer.MAX_VALUE, b2.getPreferredSize().height));
+        b9.setMaximumSize(new Dimension(Integer.MAX_VALUE, b2.getPreferredSize().height));
 
         // Bottom panel with GridLayout for User/Group/message total and positive percentage
         JPanel bottomPanel = new JPanel(new GridLayout(2, 2, 0, 0));
@@ -122,6 +128,8 @@ public class AdminControlPanel implements ActionListener, Visitor{
         b5.addActionListener(this);
         b6.addActionListener(this);
         b7.addActionListener(this);
+        b8.addActionListener(this);
+        b9.addActionListener(this);
 
         // Root for Treeview
         root = new Group("root");
@@ -226,6 +234,17 @@ public class AdminControlPanel implements ActionListener, Visitor{
         JOptionPane.showMessageDialog(frame, "Positive Percentage: " + ((double)positivePercentage/messageTotal * 100));
     }
 
+    //Prints out the positive percentage
+    public boolean GetVerification(){
+        Set<String> names = users.keySet();
+        for( String name: names ){
+            if( name.indexOf( " " ) != -1 ){
+                return false;
+            }
+        }
+        return true;
+    }
+
     public void VisitMessages(User user){
         messageTotal += user.GetMyTweets().size();
     }
@@ -243,6 +262,27 @@ public class AdminControlPanel implements ActionListener, Visitor{
         }
     }
 
+    private void FindLastUpdatedUser() {
+        User lastUpdatedUser = null;
+        long maxUpdateTime = Long.MIN_VALUE;
+    
+        for (Visitable user : users.values()) {
+            if (user instanceof User) {
+                long updateTime = ((User) user).GetLastUpdateTime();
+                if (updateTime > maxUpdateTime) {
+                    maxUpdateTime = updateTime;
+                    lastUpdatedUser = (User) user;
+                }
+            }
+        }
+    
+        if (lastUpdatedUser != null) {
+            JOptionPane.showMessageDialog(frame, "Last Updated User: " + lastUpdatedUser.GetId());
+        } else {
+            JOptionPane.showMessageDialog(frame, "No users found.");
+        }
+    }
+    
     // action path for buttons
     public void actionPerformed(ActionEvent e){
         if(e.getSource() == b1){
@@ -291,6 +331,17 @@ public class AdminControlPanel implements ActionListener, Visitor{
         }
         else if(e.getSource() == b7){
             GetPositiveTotal();
+        }
+        else if (e.getSource() == b8) {
+            if (GetVerification()){
+                JOptionPane.showMessageDialog(frame, "Validation Successful");
+            }
+            else{
+                JOptionPane.showMessageDialog(frame, "Invalidation found");
+            }
+        }
+        else if(e.getSource() == b9){
+            FindLastUpdatedUser();
         }
     }
 
